@@ -22,6 +22,8 @@
   https://docs.arduino.cc/built-in-examples/digital/Button/
 */
 
+#include <cstdlib>
+
 // constants won't change. They're used here to set pin numbers:
 const int buttonLPin = D9;  // the number of the pushbutton pin
 const int buttonRPin = D8;  // the number of the pushbutton pin
@@ -36,6 +38,7 @@ int buttonRState = 0;  // variable for reading the pushbutton status
 bool playing = false;
 int winner = 0; // 0 is no winner, 1 is left, 2 is right
 int light = 1; // 1 is left, 2 is right
+int randDelay = 0;
 
 
 void setup() {
@@ -51,7 +54,6 @@ void loop() {
   // read the state of each pushbutton value:
   buttonLState = digitalRead(buttonLPin);
   buttonRState = digitalRead(buttonRPin);
-  randDelay = 
 
   // check if the game has been reset
   if (buttonLState == HIGH && buttonRState == HIGH) {
@@ -63,13 +65,14 @@ void loop() {
   while (playing){
     buttonLState = digitalRead(buttonLPin);
     buttonRState = digitalRead(buttonRPin);
+    randDelay = rand() % 1000 + 100;
     // the game has two states: the left light is on or the right
     if (light == 1) {
 
       // if correct button is pressed, swap LEDs
       if (buttonLState == HIGH) {
         digitalWrite(ledLPin, LOW);
-        delay(250);
+        delay(randDelay);
         digitalWrite(ledRPin, HIGH);
         light = 2;
         // if the wrong player presses a button, they lose and the game ends
@@ -83,7 +86,7 @@ void loop() {
 
       if (buttonRState == HIGH) {
         digitalWrite(ledRPin, LOW);
-        delay(250);
+        delay(randDelay);
         digitalWrite(ledLPin, HIGH);
         light = 1;
       } else if (buttonLState == HIGH) {

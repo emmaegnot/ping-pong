@@ -40,6 +40,14 @@ int winner = 0; // 0 is no winner, 1 is left, 2 is right
 int light = 1; // 1 is left, 2 is right
 int randDelay = 0;
 
+// flicker winner's light
+void flicker(int ledPin) {
+    digitalWrite(ledPin, HIGH);
+    delay(80);
+    digitalWrite(ledPin, LOW);
+    delay(80);
+}
+
 
 void setup() {
   // initialize the LED pin as an output:
@@ -99,8 +107,8 @@ void loop() {
   }
   // game over
   if (winner == 1) {
-    digitalWrite(ledLPin, HIGH);
+    flicker(ledLPin);
   } else if (winner == 2) {
-  digitalWrite(ledRPin, HIGH);
+    flicker(ledRPin);
   }
 }

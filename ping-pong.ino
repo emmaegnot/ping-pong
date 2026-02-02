@@ -25,27 +25,76 @@
 #include <cstdlib>
 
 // constants won't change. They're used here to set pin numbers:
-const int buttonLPin = D9;  // the number of the pushbutton pin
-const int buttonRPin = D8;  // the number of the pushbutton pin
+const int potentLeftPin = ;  // the number of the pushbutton pin
+const int potentRightPin = ;  // the number of the pushbutton pin
 
-const int ledLPin = D0;    // the number of the LED pin
-const int ledRPin = D6;    // the number of the LED pin
+const int resetPin = ;
+
+const int ledL1Pin = ;
+const int ledL2Pin = ;
+
+const int ledR1Pin = ;
+const int ledR2Pin = ;
 
 // variables will change:
-int buttonLState = 0;  // variable for reading the pushbutton status
-int buttonRState = 0;  // variable for reading the pushbutton status
+int potentLState = 0;  // variable for reading the potentiometer status - will set a threshold for low/high
+int potentRState = 0;  // variable for reading the potentiometer status
 
-bool playing = false;
+bool playing = false; // reset button sets this to true
 int winner = 0; // 0 is no winner, 1 is left, 2 is right
-int light = 1; // 1 is left, 2 is right
+bool canHit = false; //
+bool leftTurn = true;
 int randDelay = 0;
 
+// time variables
+unsigned long previousMillis = 0; // time the ball is hit
+unsigned long currentMillis = 0;
+unsigned long timeDiff = 0;
+const long interval = 1000;  // interval at which to blink
+
 // flicker winner's light
-void flicker(int ledPin) {
+void hitToRight(int ledPin) {
     digitalWrite(ledPin, HIGH);
     delay(80);
     digitalWrite(ledPin, LOW);
     delay(80);
+}
+
+void hitToLeft() {
+  currentMillis = millis();
+  timeDiff = currentMillis - previousMillis;
+  if (timeDiff < 200){
+    digitalWrite(ledR2Pin, HIGH);
+  }
+  else if (timeDiff < 400){
+    digitalWrite(ledR1Pin, HIGH);
+  } else if (timeDiff < 600) {
+    // LED SCREEN THING
+  } else if (timeDiff < 800) {
+    digitalWrite(ledL2Pin, HIGH);
+  } else {
+    digitalWrite(ledL1Pin, HIGH);
+    previousMillis = millis();
+    canHit = true;
+  }
+}
+
+void hitToRight() {
+  currentMillis = millis();
+  timeDiff = currentMillis - previousMillis;
+  if (timeDiff < 200){
+    digitalWrite(ledL1Pin, HIGH);
+  }
+  else if (timeDiff < 400){
+    digitalWrite(ledL2Pin, HIGH);
+  } else if (timeDiff < 600) {
+    // LED SCREEN THING
+  } else if (timeDiff < 800) {
+    digitalWrite(ledR1Pin, HIGH);
+  } else {
+    digitalWrite(ledR2Pin, HIGH);
+    canHit = true;
+  }
 }
 
 
@@ -59,11 +108,11 @@ void setup() {
 }
 
 void loop() {
-  // read the state of each pushbutton value:
+  // read the state of each potentiometer value:
   buttonLState = digitalRead(buttonLPin);
   buttonRState = digitalRead(buttonRPin);
 
-  // check if the game has been reset
+  // check if the game has been reset - change this to button
   if (buttonLState == HIGH && buttonRState == HIGH) {
       playing = true;
       winner = 0;
@@ -71,8 +120,19 @@ void loop() {
       digitalWrite(ledLPin, HIGH); //begin with left
   }
   while (playing){
+    // get potentiometer values and threshold them
     buttonLState = digitalRead(buttonLPin);
     buttonRState = digitalRead(buttonRPin);
+    
+
+    // check which turn - if left, call hitToLeft
+    if (leftTurn){
+      hitToLeft();
+
+    }
+    
+
+
     randDelay = rand() % 1000 + 100;
     // the game has two states: the left light is on or the right
     if (light == 1) {

@@ -74,7 +74,7 @@ void hitToLeft() {
     digitalWrite(ledL2Pin, HIGH);
   } else {
     digitalWrite(ledL1Pin, HIGH);
-    previousMillis = millis();
+    previousMillis = millis(); // reset timer
     canHit = true;
   }
 }
@@ -93,8 +93,14 @@ void hitToRight() {
     digitalWrite(ledR1Pin, HIGH);
   } else {
     digitalWrite(ledR2Pin, HIGH);
+    previousMillis = millis();
     canHit = true;
   }
+}
+
+// this function should check for the potentiometer being higher than the threshold within a time limit
+void hitBall(int potentiometerPin, unsigned long startTime){
+
 }
 
 
@@ -123,16 +129,22 @@ void loop() {
     // get potentiometer values and threshold them
     buttonLState = digitalRead(buttonLPin);
     buttonRState = digitalRead(buttonRPin);
-    
+
 
     // check which turn - if left, call hitToLeft
+    // this should only happen when canHit is false
     if (leftTurn){
       hitToLeft();
 
+    } else {
+      hitToRight();
     }
     
+    // once canHit is true, we need a new timer and detect if the hit has gone above the threshold
+    // the funtion hitBall should be used for this
 
 
+    // ALL OLD
     randDelay = rand() % 1000 + 100;
     // the game has two states: the left light is on or the right
     if (light == 1) {
